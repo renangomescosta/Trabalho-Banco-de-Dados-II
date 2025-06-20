@@ -12,7 +12,9 @@ CREATE TABLE Pessoa (
 CREATE TABLE Cliente (
     CPF VARCHAR(14) PRIMARY KEY, -- CPF do cliente como chave primária (PK)
     Pontuacao INT DEFAULT 0,
-    FOREIGN KEY (CPF) REFERENCES Pessoa(CPF)
+    FOREIGN KEY (CPF) REFERENCES Pessoa(CPF),
+
+    CONSTRAINT chk_pontuacao_nao_negativo CHECK (Pontuacao >= 0)
 );
 
 -- Criação da tabela Cargo (não tem FK para outras tabelas, pode ser criada cedo)
@@ -28,24 +30,30 @@ CREATE TABLE Funcionario (
     Senha VARCHAR(255) NOT NULL,
     id_cargo INT NOT NULL, -- Chave estrangeira (FK) referenciando Cargo
     FOREIGN KEY (CPF) REFERENCES Pessoa(CPF),
-    FOREIGN KEY (id_cargo) REFERENCES Cargo(id_cargo)
+    FOREIGN KEY (id_cargo) REFERENCES Cargo(id_cargo),
+
+    CONSTRAINT chk_salario_nao_negativo CHECK (Salario >= 0)
 );
 
 -- Criação da tabela Produto (não tem FK para outras tabelas, pode ser criada cedo)
 CREATE TABLE Produto (
-    id_produto SERIAL PRIMARY KEY, -- ID do produto como chave primária (PK) - Corrigido de AUTO_INCREMENT para SERIAL
+    id_produto SERIAL PRIMARY KEY,
     Nome VARCHAR(255) NOT NULL,
     Quantidade_em_estoque INT NOT NULL,
     Prateleira VARCHAR(50),
     Corredor VARCHAR(50),
     Validade DATE,
-    Valor_unitario DECIMAL(10, 2) NOT NULL
+    Valor_unitario DECIMAL(10, 2) NOT NULL,
+
+    CONSTRAINT chk_estoque_nao_negativo CHECK (Quantidade_em_estoque >= 0),
+    CONSTRAINT chk_valor_unitario_nao_negativo CHECK (Valor_unitario >= 0)
 );
+
 
 -- Criação da tabela Compra (referencia Cliente)
 CREATE TABLE Compra (
     id_compra SERIAL PRIMARY KEY, -- ID da compra como chave primária (PK) - Corrigido de AUTO_INCREMENT para SERIAL
-    CPF_Cliente VARCHAR(14) NOT NULL,         -- Chave estrangeira (FK) referenciando Cliente
+    CPF_Cliente VARCHAR(14),         
     Valor_total DECIMAL(10, 2) NOT NULL,
     Data_compra TIMESTAMP NOT NULL, -- Corrigido de DATETIME para TIMESTAMP
     FOREIGN KEY (CPF_Cliente) REFERENCES Cliente(CPF)
